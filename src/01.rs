@@ -14,7 +14,11 @@ fn main() {
     // let input = LEDGER.clone();
     let input = fs::read_to_string(FILENAME).expect("couldn't open input file");
 
-    let items: HashSet<i64> = input.lines().map(|e| e.parse().unwrap()).collect();
+    let items: HashSet<i64> = match input.lines().map(|e| e.parse::<i64>()).collect() {
+        Err(err) => panic!("err: {}", err),
+        Ok(e) => e,
+    };
+
     let diff: HashSet<i64> = items.iter().map(|e| 2020 - e).collect();
 
     let intersection: HashSet<_> = items.intersection(&diff).collect();
