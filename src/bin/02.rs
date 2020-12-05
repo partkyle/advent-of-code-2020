@@ -1,6 +1,8 @@
 use std::fs;
+use std::str::FromStr;
+use std::vec::Vec;
 
-const FILENAME: &str = "files/02/sample.txt";
+const FILENAME: &str = "files/02/input.txt";
 /*
 --- Day 2: Password Philosophy ---
 Your flight departs in a few days from the coastal airport; the easiest way down to the coast from here is via toboggan.
@@ -23,8 +25,64 @@ In the above example, 2 passwords are valid. The middle password, cdefg, is not;
 How many passwords are valid according to their policies?
 */
 
+#[derive(Debug)]
+struct Item {
+    min: u8,
+    max: u8,
+    letter: String,
+    password: String,
+}
+
+impl Item {
+    pub fn valid(&self) -> bool {
+        let count = self.password.matches(&self.letter).count();
+        // TODO: look up number type conversions and see what the most elegant way is
+        count >= self.min.into() && count <= self.max.into()
+    }
+}
+
+impl FromStr for Item {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let colon_split: Vec<&str> = s.split(":").collect();
+
+        if colon_split.len() != 2 {
+            return Err("invalid parse. Wrong number of elements past `:`".to_string());
+        }
+
+        let range_letter_split: Vec<&str> = colon_split[0].split(" ").collect();
+
+        if range_letter_split.len() != 2 {
+            return Err("invalid parse. Wrong number of elements past `-`".to_string());
+        }
+
+        let min_max: Result<Vec<u8>, _> = range_letter_split[0]
+            .split("-")
+            .map(|e| e.parse())
+            .collect();
+
+        let (min, max) = match min_max {
+            Err(err) => return Err(format!("could not get min and max: {}", err)),
+            Ok(min_max) => (min_max[0], min_max[1]),
+        };
+
+        Ok(Item {
+            min: min,
+            max: max,
+            letter: range_letter_split[1].trim().to_string(),
+            password: colon_split[1].trim().to_string(),
+        })
+    }
+}
+
 fn main() {
     let input = fs::read_to_string(FILENAME).expect("couldn't open input file");
 
-    println!("{}", input);
+    let item_result: Result<Vec<Item>, _> = input.lines().map(Item::from_str).collect();
+    let items = item_result.expect("error parsing lines");
+
+    let p = items.iter().filter(|e| e.valid()).count();
+
+    println!("answer: {:?}", p);
 }
