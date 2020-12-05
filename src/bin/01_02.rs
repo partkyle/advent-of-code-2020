@@ -1,14 +1,7 @@
 use std::collections::HashSet;
 use std::fs;
 
-const LEDGER: &str = "1721
-979
-366
-299
-675
-1456";
-
-const FILENAME: &str = "files/input-1.txt";
+const FILENAME: &str = "files/01/input.txt";
 
 fn find_pair(items: HashSet<i64>, n: i64) -> HashSet<i64> {
     let diff: HashSet<i64> = items.iter().map(|e| n - e).collect();
