@@ -72,70 +72,18 @@ and down 1, how many trees would you encounter?
 */
 
 use std::fs;
-use std::str::FromStr;
+
+extern crate lib;
+use lib::q03::Board;
 
 const FILENAME: &str = "files/03/input.txt";
-
-#[derive(Debug, Clone)]
-enum Space {
-    Empty,
-    Tree,
-}
-
-impl FromStr for Space {
-    type Err = String;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "." => Ok(Space::Empty),
-            "#" => Ok(Space::Tree),
-            _ => Err(format!("Not a board type: {}", s)),
-        }
-    }
-}
-
-struct Board<Space> {
-    board: Vec<Vec<Space>>,
-}
-
-impl Board<Space> {
-    fn new(input: String) -> Result<Board<Space>, String> {
-        let board_result: Result<Vec<Vec<Space>>, _> = input
-            .lines()
-            .map(|s| s.chars().map(|c| c.to_string().parse()).collect())
-            .collect();
-
-        match board_result {
-            Err(e) => Err(format!("error creating board state: {}", e)),
-            Ok(result) => Ok(Board { board: result }),
-        }
-    }
-
-    fn get_at(&self, x: usize, y: usize) -> Space {
-        self.board[y][x].clone()
-    }
-
-    fn get_at_wrapping(&self, x: usize, y: usize) -> Space {
-        let new_x = x % self.board[y].len();
-        self.get_at(new_x, y)
-    }
-}
 
 fn main() {
     let input = fs::read_to_string(FILENAME).expect("couldn't open input file");
 
-    let board = Board::new(input).unwrap();
+    let board = Board::new(input).expect("failed to create board from input file");
 
-    let (mut x, mut y) = (0, 0);
-    let mut total = 0;
-    while y < board.board.len() {
-        total += match board.get_at_wrapping(x, y) {
-            Space::Tree => 1,
-            Space::Empty => 0,
-        };
-        x += 3;
-        y += 1;
-    }
+    let total = board.count_trees_from_slope(3, 1);
 
     println!("answer: {}", total);
 }
