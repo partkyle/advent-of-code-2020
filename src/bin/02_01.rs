@@ -2,7 +2,7 @@ use std::fs;
 use std::vec::Vec;
 
 extern crate lib;
-use lib::two::Item;
+use lib::q02::Item;
 use std::str::FromStr;
 
 const FILENAME: &str = "files/02/input.txt";
