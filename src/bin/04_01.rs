@@ -43,103 +43,24 @@ According to the above rules, your improved system would report 2 valid passport
 
 Count the number of valid passports - those that have all required fields. Treat cid as optional. In your batch file, how many passports are valid?
 */
-use std::collections::HashMap;
-use std::convert::{From, Into, TryFrom, TryInto};
 use std::fs;
+use std::convert::TryInto;
+
+extern crate lib;
+use lib::q04::Passport;
 
 const FILENAME: &str = "files/04/input.txt";
-
-#[derive(Debug, Eq, PartialEq, Hash)]
-enum Field {
-    BYR,
-    IYR,
-    EYR,
-    HGT,
-    HCL,
-    ECL,
-    PID,
-    CID,
-    INVALID,
-}
-
-impl Field {
-    fn required() -> &'static [Field] {
-        static REQUIRED: &'static [Field] = &[
-            Field::BYR,
-            Field::IYR,
-            Field::EYR,
-            Field::HGT,
-            Field::HCL,
-            Field::ECL,
-            Field::PID,
-        ];
-        REQUIRED
-    }
-}
-
-impl<'a> From<&'a str> for Field {
-    fn from(s: &'a str) -> Field {
-        match s {
-            "byr" => Field::BYR,
-            "iyr" => Field::IYR,
-            "eyr" => Field::EYR,
-            "hgt" => Field::HGT,
-            "hcl" => Field::HCL,
-            "ecl" => Field::ECL,
-            "pid" => Field::PID,
-            "cid" => Field::CID,
-            _ => Field::INVALID,
-        }
-    }
-}
-
-#[derive(Debug)]
-struct Passport<'a> {
-    data: HashMap<Field, &'a str>,
-}
-
-impl<'a> Passport<'a> {
-    fn new() -> Passport<'a> {
-        Passport {
-            data: HashMap::new(),
-        }
-    }
-
-    fn valid(&self) -> bool {
-        Field::required()
-            .iter()
-            .map(|f| self.data.get(f).unwrap_or(&"").len() > 0)
-            .fold(true, |acc, a| acc && a)
-    }
-}
-
-impl<'a> TryFrom<&'a str> for Passport<'a> {
-    type Error = String;
-    fn try_from(s: &'a str) -> Result<Self, Self::Error> {
-        let mut result: Passport = Passport::new();
-        for field in s.split_whitespace() {
-            let key_value: Vec<&str> = field.splitn(2, ":").collect();
-
-            if key_value.len() != 2 {
-                return Err(format!("invalid field: {}", field));
-            }
-
-            if let Field::INVALID = key_value[0].into() {
-                return Err(format!("invalid field: {}", key_value[0]));
-            }
-
-            result.data.insert(key_value[0].into(), key_value[1]);
-        }
-        Ok(result)
-    }
-}
 
 fn main() {
     let input = fs::read_to_string(FILENAME).expect("couldn't open input file");
 
     let passports: Result<Vec<Passport>, _> = input.split("\n\n").map(|e| e.try_into()).collect();
 
-    let answer = passports.expect("could not load passports").iter().filter(|p| p.valid()).count();
+    let answer = passports
+        .expect("could not load passports")
+        .iter()
+        .filter(|p| p.all_fields_present())
+        .count();
 
     println!("answer: {}", answer);
 }
