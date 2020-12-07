@@ -36,7 +36,10 @@ fn main() {
     */
     let slopes = [(1, 1), (3, 1), (5, 1), (7, 1), (1, 2)];
 
-    let mulitplied = slopes.iter().map(|s| board.count_trees_from_slope(s.0, s.1)).fold(1, |acc, n| acc * n);
+    let mulitplied = slopes
+        .iter()
+        .map(|s| board.count_trees_from_slope(s.0, s.1))
+        .fold(1, |acc, n| acc * n);
 
     println!("answer: {}", mulitplied);
 }
