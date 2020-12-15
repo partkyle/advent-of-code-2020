@@ -19,6 +19,20 @@
                 "kind": "build",
                 "isDefault": true
             }
+        },
+        {
+            "type": "shell",
+            "label": "Build Current File",
+            "command": "cargo",
+            "args": [
+                "build",
+                "--bin",
+                "${fileBasenameNoExtension}"
+            ],
+            "problemMatcher": [
+                "$rustc"
+            ],
+            "group": "build"
         }
     ]
 }
