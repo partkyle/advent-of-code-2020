@@ -18,3 +18,15 @@ impl From<io::Error> for Error {
         Error { msg: e.to_string() }
     }
 }
+
+impl From<String> for Error {
+    fn from(e: String) -> Self {
+        Error { msg: e }
+    }
+}
+
+impl From<&str> for Error {
+    fn from(e: &str) -> Self {
+        Error { msg: e.to_string() }
+    }
+}
