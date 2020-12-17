@@ -1,12 +1,10 @@
 use std::collections::HashSet;
 use std::fs;
 
-const FILENAME: &str = "files/01/input.txt";
+extern crate lib;
+use lib::q01::find_pair;
 
-fn find_pair(items: HashSet<i64>, n: i64) -> HashSet<i64> {
-    let diff: HashSet<i64> = items.iter().map(|e| n - e).collect();
-    items.intersection(&diff).map(|&e| e).collect()
-}
+const FILENAME: &str = "files/01/input.txt";
 
 fn main() {
     // let input = LEDGER.clone();
