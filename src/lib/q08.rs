@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 use std::convert::TryInto;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Instruction {
     NOP(i64),
     ACC(i64),
@@ -48,8 +48,11 @@ pub fn run_instructions(instructions: Vec<Instruction>, early_exit: bool) -> Opt
 
     let mut instruction_tracker = HashSet::new();
 
+    let mut broke_early = false;
+
     while iptr < instructions.len().try_into().unwrap() {
         if instruction_tracker.contains(&iptr) {
+            broke_early = true;
             break;
         }
 
@@ -61,10 +64,8 @@ pub fn run_instructions(instructions: Vec<Instruction>, early_exit: bool) -> Opt
         acc += current.acc();
     }
 
-    if !early_exit {
-        if iptr != instruction_tracker.len().try_into().unwrap() {
-            return None;
-        }
+    if !early_exit && broke_early {
+        return None;
     }
 
     Some(acc)
