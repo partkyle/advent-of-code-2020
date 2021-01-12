@@ -60,7 +60,6 @@ impl<'a> World<'a> {
             }
 
             Rule::Char(s) => format!("{}", s),
-
         }
     }
 }
